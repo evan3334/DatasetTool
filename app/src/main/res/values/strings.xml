@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Dataset Tool</string>
+    <string name="camera_view_content_description">Image currently seen through camera</string>
+    <string name="create_new_dataset">Create New Dataset</string>
+    <string name="modify_existing_dataset">Modify Existing Dataset</string>
+    <string name="next">Next</string>
+    <string name="enter_dataset_name">Enter the name for the dataset:</string>
+    <string name="name">Name</string>
+    <string name="you_must_enter_name">You must enter a name!</string>
+    <string name="will_be_saved_to">Will be saved to: %1$s</string>
+</resources>
