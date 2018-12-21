@@ -2,25 +2,21 @@ package pw.evan.datasettool;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import org.jetbrains.annotations.Contract;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 public class DatasetCreateActivity extends AppCompatActivity {
 
@@ -32,9 +28,12 @@ public class DatasetCreateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dataset_create);
-        EditText nameInput = findViewById(R.id.nameInput);
+        final EditText nameInput = findViewById(R.id.nameInput);
         TextView statusView = findViewById(R.id.statusView);
         Button nextButton = findViewById(R.id.nextButton);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState != null) {
             nameInput.setText(savedInstanceState.getString(KEY_CURRENT_INPUT, ""));
@@ -69,7 +68,8 @@ public class DatasetCreateActivity extends AppCompatActivity {
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
                     Button nextButton = findViewById(R.id.nextButton);
                     if (nextButton.isEnabled()) {
-                        next();
+                        String text = formatFilename(nameInput.getText().toString());
+                        next(text);
                     }
                     handled = true;
                 }
@@ -80,7 +80,9 @@ public class DatasetCreateActivity extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                next();
+                EditText nameInput = findViewById(R.id.nameInput);
+                String text = formatFilename(nameInput.getText().toString());
+                next(text);
             }
         });
     }
@@ -95,13 +97,12 @@ public class DatasetCreateActivity extends AppCompatActivity {
     }
 
     private void checkInput(Editable s) {
-        String text = s.toString();
-        text = text.trim();
+        String text = formatFilename(s.toString());
         if (text.length() == 0) {
             youMustEnterSomething();
         } else if (containsReservedChars(text)) {
             invalidCharacters();
-        } else if (doesFileExist(formatFilename(text))) {
+        } else if (doesFileExist(text)) {
             nameExists();
         } else {
             willBeSavedTo(text);
@@ -151,12 +152,9 @@ public class DatasetCreateActivity extends AppCompatActivity {
     }
 
     private String formatFilename(String input) {
-        if (containsReservedChars(input)) {
-            return null;
-        }
         String output = input.toLowerCase();
         output = output.trim();
-        output = output.replace(" ", "_");
+        output = output.replaceAll(" ", "_");
         return output;
     }
 
@@ -164,10 +162,34 @@ public class DatasetCreateActivity extends AppCompatActivity {
         return input.matches(RESERVED_CHARS_REGEX);
     }
 
-    private void next() {
-        Intent i = new Intent(this, DatasetEditActivity.class);
-        startActivity(i);
-        finish();
+    private void errFilesExist(){
+        Toast.makeText(this, R.string.err_files_exist, Toast.LENGTH_SHORT).show();
+    }
+
+    private void errException(Exception e){
+        Toast.makeText(this, getString(R.string.err_unexpected_exception, e.toString()), Toast.LENGTH_SHORT).show();
+    }
+
+    private void next(String name) {
+        File directory = new File(getExternalFilesDir(null), name);
+        if(directory.mkdir()){
+            File csv = new File(directory, name+".csv");
+            try {
+                if (csv.createNewFile()){
+                    Intent i = new Intent(this, DatasetEditActivity.class);
+                    i.putExtra(DatasetEditActivity.EXTRA_DATASET_FILENAME, name);
+                    startActivity(i);
+                    finish();
+                } else {
+                    errFilesExist();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                errException(e);
+            }
+        } else {
+            errFilesExist();
+        }
     }
 
 }
