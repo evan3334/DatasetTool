@@ -8,4 +8,6 @@
     <string name="name">Name</string>
     <string name="you_must_enter_name">You must enter a name!</string>
     <string name="will_be_saved_to">Will be saved to: %1$s</string>
+    <string name="invalid_characters_used">Invalid characters used in name.</string>
+    <string name="dataset_already_exists">A dataset already exists with this name.</string>
 </resources>
