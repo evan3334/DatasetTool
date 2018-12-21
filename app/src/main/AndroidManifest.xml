@@ -24,9 +24,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DatasetEditActivity" />
-        <activity android:name=".DatasetCreateActivity" />
-        <activity android:name=".DatasetChooseActivity"></activity>
+        <activity android:name=".DatasetEditActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pw.evan.datasettool.MainActivity" />
+        </activity>
+        <activity android:name=".DatasetCreateActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pw.evan.datasettool.MainActivity" />
+        </activity>
+        <activity android:name=".DatasetChooseActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pw.evan.datasettool.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
