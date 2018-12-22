@@ -13,4 +13,6 @@
     <string name="err_unexpected_exception">An unexpected exception occurred:\n%1$s\nPlease check the log for more details.</string>
     <string name="err_files_exist">One or more of the files to be created already exist. Please try again with a different name.</string>
     <string name="refresh">Refresh</string>
+    <string name="dataset_title_placeholder">dataset_default_title</string>
+    <string name="add_entry">Add Entry</string>
 </resources>
