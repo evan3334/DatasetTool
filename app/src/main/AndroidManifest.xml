@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="pw.evan.datasettool">
 
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -39,6 +40,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pw.evan.datasettool.MainActivity" />
         </activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="pw.evan.datasettool.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_file_paths"/>
+        </provider>
     </application>
 
 </manifest>
