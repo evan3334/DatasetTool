@@ -64,8 +64,11 @@ public class Dataset implements Parcelable {
     public void writeToCSV(CSVPrinter printer){
         try {
             printer.printRecord(CSV_KEYS);
+            int index = 0;
             for(Entry current : entries){
+                printer.print(index);
                 current.writeToCSV(printer);
+                index++;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,15 +103,13 @@ public class Dataset implements Parcelable {
 
 
     public static class Entry implements Parcelable {
-        private int index;
         private String filename;
         private BoundingBox boundingBox;
         private String className;
         private int width;
         private int height;
 
-        public Entry(int index, String filename, @NonNull BoundingBox boundingBox, int width, int height, String className) {
-            this.index = index;
+        public Entry(String filename, @NonNull BoundingBox boundingBox, int width, int height, String className) {
             this.filename = filename;
             this.boundingBox = boundingBox.copy();
             this.width = width;
@@ -117,7 +118,6 @@ public class Dataset implements Parcelable {
         }
 
         public Entry(@NonNull CSVRecord record) {
-            this.index = Integer.parseInt(record.get(CSV_KEY_INDEX));
             this.filename = record.get(CSV_KEY_FILENAME);
             int xmin = Integer.parseInt(record.get(CSV_KEY_XMIN));
             int xmax = Integer.parseInt(record.get(CSV_KEY_XMAX));
@@ -130,7 +130,6 @@ public class Dataset implements Parcelable {
         }
 
         private Entry(@NonNull Parcel in) {
-            index = in.readInt();
             filename = in.readString();
             boundingBox = in.readParcelable(BoundingBox.class.getClassLoader());
             className = in.readString();
@@ -157,7 +156,6 @@ public class Dataset implements Parcelable {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(getIndex());
             dest.writeString(getFilename());
             dest.writeParcelable(getBoundingBox(), flags);
             dest.writeString(getClassName());
@@ -167,7 +165,6 @@ public class Dataset implements Parcelable {
 
         public void writeToCSV(CSVPrinter printer) {
             try {
-                printer.print(index);
                 printer.print(filename);
                 printer.print(width);
                 printer.print(height);
@@ -182,9 +179,6 @@ public class Dataset implements Parcelable {
             }
         }
 
-        public int getIndex() {
-            return index;
-        }
 
         public String getFilename() {
             return filename;
