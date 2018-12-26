@@ -15,4 +15,23 @@
     <string name="refresh">Refresh</string>
     <string name="dataset_title_placeholder">dataset_default_title</string>
     <string name="add_entry">Add Entry</string>
+    <string name="minus_one">-1</string>
+    <string name="thumbnail_content_desc">Thumbnail of dataset entry image</string>
+    <string name="filename_display_placeholder">default.jpeg</string>
+    <string name="size_display_placeholder">(1234x1234)</string>
+    <string name="move_up">Move Up</string>
+    <string name="move_down">Move Down</string>
+    <string name="move_to_top">Move To Top</string>
+    <string name="move_to_bottom">Move To Bottom</string>
+    <string name="ymax_placeholder">ymax: 5678</string>
+    <string name="ymin_placeholder">ymin: 1234</string>
+    <string name="xmax_placeholder">xmax: 5678</string>
+    <string name="xmin_placeholder">xmin: 1234</string>
+    <string name="object_class_placeholder">ObjectClass at</string>
+    <string name="object_class_at">%1$s at:</string>
+    <string name="size_display_format">(%1$dx%2$d)</string>
+    <string name="ymax_format">ymax: %1$d</string>
+    <string name="ymin_format">ymin: %1$d</string>
+    <string name="xmax_format">xmax: %1$d</string>
+    <string name="xmin_format">xmin: %1$d</string>
 </resources>

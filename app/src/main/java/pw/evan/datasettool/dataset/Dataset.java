@@ -36,17 +36,19 @@ public class Dataset implements Parcelable {
     ));
 
     private ArrayList<Entry> entries;
+    private String name;
 
     public ArrayList<Entry> getEntries() {
         return entries;
     }
 
-    public Dataset(){
+    public Dataset(String name){
         this.entries = new ArrayList<>();
+        this.name = name;
     }
 
-    public Dataset(CSVParser input){
-        this();
+    public Dataset(String name, CSVParser input){
+        this(name);
         try {
             for(CSVRecord record : input.getRecords()){
                 try {
@@ -76,6 +78,7 @@ public class Dataset implements Parcelable {
     }
 
     private Dataset(Parcel in) {
+        name = in.readString();
         entries = in.createTypedArrayList(Entry.CREATOR);
     }
 
@@ -98,7 +101,12 @@ public class Dataset implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getName());
         dest.writeTypedList(entries);
+    }
+
+    public String getName() {
+        return name;
     }
 
 

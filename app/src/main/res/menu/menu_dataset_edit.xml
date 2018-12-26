@@ -7,4 +7,10 @@
         android:icon="@drawable/ic_add"
         android:title="@string/add_entry"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/ic_refresh"
+        android:title="@string/refresh"
+        app:showAsAction="ifRoom"/>
 </menu>

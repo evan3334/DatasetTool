@@ -30,7 +30,7 @@ public class DatasetChooseActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_refresh, menu);
+        inflater.inflate(R.menu.menu_dataset_choose, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
