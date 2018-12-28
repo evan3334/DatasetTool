@@ -17,6 +17,7 @@
     <string name="add_entry">Add Entry</string>
     <string name="minus_one">-1</string>
     <string name="thumbnail_content_desc">Thumbnail of dataset entry image</string>
+    <string name="image_content_desc">Dataset entry image</string>
     <string name="filename_display_placeholder">default.jpeg</string>
     <string name="size_display_placeholder">(1234x1234)</string>
     <string name="move_up">Move Up</string>
