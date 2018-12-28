@@ -3,6 +3,7 @@ package pw.evan.datasettool;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.HashMap;
 
-import pw.evan.datasettool.dataset.BoundingBox;
 import pw.evan.datasettool.dataset.Dataset;
 import pw.evan.datasettool.dataset.Dataset.Entry;
 
@@ -46,19 +46,19 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
         Context c = root.getContext();
         ((TextView) root.findViewById(R.id.class_display))
                 .setText(c.getString(R.string.object_class_at, entry.getClassName()));
-        BoundingBox box = entry.getBoundingBox();
+        Rect box = entry.getBoundingBox();
         //xmin
         ((TextView) root.findViewById(R.id.xmin_display))
-                .setText(c.getString(R.string.xmin_format, box.getLeft()));
+                .setText(c.getString(R.string.xmin_format, box.left));
         //xmax
         ((TextView) root.findViewById(R.id.xmax_display))
-                .setText(c.getString(R.string.xmax_format, box.getRight()));
+                .setText(c.getString(R.string.xmax_format, box.right));
         //ymin
         ((TextView) root.findViewById(R.id.ymin_display))
-                .setText(c.getString(R.string.ymin_format, box.getTop()));
+                .setText(c.getString(R.string.ymin_format, box.top));
         //ymax
         ((TextView) root.findViewById(R.id.ymax_display))
-                .setText(c.getString(R.string.ymax_format, box.getBottom()));
+                .setText(c.getString(R.string.ymax_format, box.bottom));
         //dimensions (w x h)
         ((TextView) root.findViewById(R.id.size_display))
                 .setText(c.getString(R.string.size_display_format, entry.getWidth(), entry.getHeight()));

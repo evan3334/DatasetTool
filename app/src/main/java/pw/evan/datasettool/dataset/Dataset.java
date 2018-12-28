@@ -1,5 +1,6 @@
 package pw.evan.datasettool.dataset;
 
+import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -112,14 +113,14 @@ public class Dataset implements Parcelable {
 
     public static class Entry implements Parcelable {
         private String filename;
-        private BoundingBox boundingBox;
+        private Rect boundingBox;
         private String className;
         private int width;
         private int height;
 
-        public Entry(String filename, @NonNull BoundingBox boundingBox, int width, int height, String className) {
+        public Entry(String filename, @NonNull Rect boundingBox, int width, int height, String className) {
             this.filename = filename;
-            this.boundingBox = boundingBox.copy();
+            this.boundingBox = boundingBox;
             this.width = width;
             this.height = height;
             this.className = className;
@@ -131,7 +132,7 @@ public class Dataset implements Parcelable {
             int xmax = Integer.parseInt(record.get(CSV_KEY_XMAX));
             int ymin = Integer.parseInt(record.get(CSV_KEY_YMIN));
             int ymax = Integer.parseInt(record.get(CSV_KEY_YMAX));
-            this.boundingBox = new BoundingBox(xmin, ymin, xmax, ymax);
+            this.boundingBox = new Rect(xmin, ymin, xmax, ymax);
             this.width = Integer.parseInt(record.get(CSV_KEY_WIDTH));
             this.height = Integer.parseInt(record.get(CSV_KEY_HEIGHT));
             this.className = record.get(CSV_KEY_CLASS);
@@ -139,7 +140,7 @@ public class Dataset implements Parcelable {
 
         private Entry(@NonNull Parcel in) {
             filename = in.readString();
-            boundingBox = in.readParcelable(BoundingBox.class.getClassLoader());
+            boundingBox = in.readParcelable(Rect.class.getClassLoader());
             className = in.readString();
             width = in.readInt();
             height = in.readInt();
@@ -177,10 +178,10 @@ public class Dataset implements Parcelable {
                 printer.print(width);
                 printer.print(height);
                 printer.print(className);
-                printer.print(boundingBox.getLeft());   //xmin
-                printer.print(boundingBox.getRight());  //xmax
-                printer.print(boundingBox.getTop());    //ymin
-                printer.print(boundingBox.getBottom()); //ymax
+                printer.print(boundingBox.left);   //xmin
+                printer.print(boundingBox.right);  //xmax
+                printer.print(boundingBox.top);    //ymin
+                printer.print(boundingBox.bottom); //ymax
                 printer.println();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -192,7 +193,7 @@ public class Dataset implements Parcelable {
             return filename;
         }
 
-        public BoundingBox getBoundingBox() {
+        public Rect getBoundingBox() {
             return boundingBox;
         }
 
