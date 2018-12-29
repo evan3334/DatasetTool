@@ -1,14 +1,19 @@
 package pw.evan.datasettool.dataset;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
+import pw.evan.datasettool.DatasetEntryListAdapter;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,12 +53,17 @@ public class Dataset implements Parcelable {
         this.name = name;
     }
 
+    public Entry createEntry(String filename, Rect boundingBox, int width, int height, String className){
+        return new Entry(this, filename, boundingBox, width, height, className);
+    }
+
     public Dataset(String name, CSVParser input){
         this(name);
         try {
             for(CSVRecord record : input.getRecords()){
                 try {
                     Entry current = new Entry(record);
+                    current.setOwner(this);
                     this.entries.add(current);
                 } catch(IllegalArgumentException e){
                     e.printStackTrace();
@@ -81,6 +91,9 @@ public class Dataset implements Parcelable {
     private Dataset(Parcel in) {
         name = in.readString();
         entries = in.createTypedArrayList(Entry.CREATOR);
+        for(Entry entry : entries){
+            entry.setOwner(this);
+        }
     }
 
     public static final Creator<Dataset> CREATOR = new Creator<Dataset>() {
@@ -100,6 +113,8 @@ public class Dataset implements Parcelable {
         return 0;
     }
 
+
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(getName());
@@ -111,22 +126,25 @@ public class Dataset implements Parcelable {
     }
 
 
+
     public static class Entry implements Parcelable {
         private String filename;
         private Rect boundingBox;
         private String className;
         private int width;
         private int height;
+        private Dataset owningDataset;
 
-        public Entry(String filename, @NonNull Rect boundingBox, int width, int height, String className) {
+        protected Entry(Dataset owner, String filename, @NonNull Rect boundingBox, int width, int height, String className) {
             this.filename = filename;
             this.boundingBox = boundingBox;
             this.width = width;
             this.height = height;
             this.className = className;
+            this.owningDataset = owner;
         }
 
-        public Entry(@NonNull CSVRecord record) {
+        protected Entry(@NonNull CSVRecord record) {
             this.filename = record.get(CSV_KEY_FILENAME);
             int xmin = Integer.parseInt(record.get(CSV_KEY_XMIN));
             int xmax = Integer.parseInt(record.get(CSV_KEY_XMAX));
@@ -158,6 +176,27 @@ public class Dataset implements Parcelable {
             }
         };
 
+        protected void setOwner(@NonNull Dataset dataset){
+            this.owningDataset = dataset;
+        }
+
+        public Dataset getOwningDataset(){
+            return this.owningDataset;
+        }
+
+        public Bitmap loadImage(Context context){
+            File directory = new File(context.getExternalFilesDir(null),this.getOwningDataset().getName());
+            if(directory.isDirectory() && directory.exists()){
+                File image = new File(directory,this.filename);
+                if(image.exists()){
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    return BitmapFactory.decodeFile(image.getAbsolutePath(), options);
+                }
+            }
+            return null;
+        }
+
         @Override
         public int describeContents() {
             return 0;
@@ -171,6 +210,8 @@ public class Dataset implements Parcelable {
             dest.writeInt(getWidth());
             dest.writeInt(getHeight());
         }
+
+
 
         public void writeToCSV(CSVPrinter printer) {
             try {

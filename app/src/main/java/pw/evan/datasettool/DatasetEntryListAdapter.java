@@ -63,27 +63,10 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
         ((TextView) root.findViewById(R.id.size_display))
                 .setText(c.getString(R.string.size_display_format, entry.getWidth(), entry.getHeight()));
 
-        Bitmap image = loadImage(c, entry.getFilename());
+        Bitmap image = entry.loadImage(c);
         if(image != null) {
             ((ImageView) root.findViewById(R.id.thumbnail)).setImageBitmap(image);
         }
-    }
-
-    private Bitmap loadImage(Context context, String filename){
-        File directory = new File(context.getExternalFilesDir(null),dataset.getName());
-        if(directory.isDirectory() && directory.exists()){
-            File image = new File(directory,filename);
-            if(image.exists()){
-                return loadBitmap(image);
-            }
-        }
-        return null;
-    }
-
-    private Bitmap loadBitmap(File file){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
     }
 
 
