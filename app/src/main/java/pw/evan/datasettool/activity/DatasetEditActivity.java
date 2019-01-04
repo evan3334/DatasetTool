@@ -1,14 +1,10 @@
-package pw.evan.datasettool;
+package pw.evan.datasettool.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.ActionBar;
@@ -24,20 +20,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 
+import pw.evan.datasettool.adapter.DatasetEntryListAdapter;
+import pw.evan.datasettool.R;
 import pw.evan.datasettool.dataset.Dataset;
 
 public class DatasetEditActivity extends AppCompatActivity {

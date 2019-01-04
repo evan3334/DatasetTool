@@ -1,8 +1,10 @@
-package pw.evan.datasettool;
+package pw.evan.datasettool.activity;
 
 import android.content.Intent;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import pw.evan.datasettool.R;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;

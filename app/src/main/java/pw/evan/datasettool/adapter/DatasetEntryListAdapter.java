@@ -1,9 +1,8 @@
-package pw.evan.datasettool;
+package pw.evan.datasettool.adapter;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,9 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.HashMap;
 
+import pw.evan.datasettool.R;
+import pw.evan.datasettool.activity.BoundingBoxSelectActivity;
 import pw.evan.datasettool.dataset.Dataset;
 import pw.evan.datasettool.dataset.Dataset.Entry;
 

@@ -1,8 +1,10 @@
-package pw.evan.datasettool;
+package pw.evan.datasettool.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import pw.evan.datasettool.R;
+
 import android.view.View;
 import android.widget.Button;
 

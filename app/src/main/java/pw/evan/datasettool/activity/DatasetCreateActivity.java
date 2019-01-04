@@ -1,9 +1,11 @@
-package pw.evan.datasettool;
+package pw.evan.datasettool.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import pw.evan.datasettool.R;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;

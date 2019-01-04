@@ -17,27 +17,27 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DatasetEditActivity">
+        <activity android:name=".activity.DatasetEditActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pw.evan.datasettool.MainActivity" />
+                android:value="pw.evan.datasettool.activity.MainActivity" />
         </activity>
-        <activity android:name=".DatasetCreateActivity">
+        <activity android:name=".activity.DatasetCreateActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pw.evan.datasettool.MainActivity" />
+                android:value="pw.evan.datasettool.activity.MainActivity" />
         </activity>
-        <activity android:name=".DatasetChooseActivity">
+        <activity android:name=".activity.DatasetChooseActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pw.evan.datasettool.MainActivity" />
+                android:value="pw.evan.datasettool.activity.MainActivity" />
         </activity>
 
         <provider
@@ -50,7 +50,7 @@
                 android:resource="@xml/provider_file_paths" />
         </provider>
 
-        <activity android:name=".BoundingBoxSelectActivity">
+        <activity android:name=".activity.BoundingBoxSelectActivity">
 
         </activity>
     </application>
