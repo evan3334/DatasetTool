@@ -50,11 +50,8 @@
                 android:resource="@xml/provider_file_paths" />
         </provider>
 
-        <activity android:name=".BoundingBoxSelectActivity"
-            android:exported="true">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="pw.evan.datasettool.DatasetEditActivity" />
+        <activity android:name=".BoundingBoxSelectActivity">
+
         </activity>
     </application>
 

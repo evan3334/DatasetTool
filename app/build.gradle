@@ -33,4 +33,5 @@ dependencies {
     implementation 'org.apache.commons:commons-csv:1.6'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+    implementation 'commons-io:commons-io:2.6'
 }

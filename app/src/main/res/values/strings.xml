@@ -35,4 +35,5 @@
     <string name="ymin_format">ymin: %1$d</string>
     <string name="xmax_format">xmax: %1$d</string>
     <string name="xmin_format">xmin: %1$d</string>
+    <string name="done">Done</string>
 </resources>

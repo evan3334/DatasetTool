@@ -1,10 +1,12 @@
 package pw.evan.datasettool;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +22,21 @@ import pw.evan.datasettool.dataset.Dataset.Entry;
 
 public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryListAdapter.DatasetEntryViewHolder> {
     private Dataset dataset;
+    private AppCompatActivity activity;
+    private int requestCode;
     //TODO use this later
     private HashMap<Entry, Bitmap> thumbnails;
 
-    public DatasetEntryListAdapter(@NonNull Dataset dataset) {
+    public DatasetEntryListAdapter(@NonNull Dataset dataset, int requestCode, @NonNull AppCompatActivity activity) {
         this.dataset = dataset;
         this.thumbnails = new HashMap<>();
+        this.activity = activity;
+        this.requestCode = requestCode;
+    }
+
+    public void updateDataset(@NonNull Dataset dataset){
+        this.dataset = dataset;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -67,6 +78,20 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
         if(image != null) {
             ((ImageView) root.findViewById(R.id.thumbnail)).setImageBitmap(image);
         }
+
+        root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickHandler(c, entry);
+            }
+        });
+    }
+
+    private void clickHandler(Context context, Entry entry){
+        Intent i = new Intent(context, BoundingBoxSelectActivity.class);
+        i.putExtra(BoundingBoxSelectActivity.EXTRA_DATASET_ENTRY, entry);
+        i.putExtra(BoundingBoxSelectActivity.EXTRA_ENTRY_INDEX, dataset.getIndex(entry));
+        activity.startActivityForResult(i, requestCode);
     }
 
 
