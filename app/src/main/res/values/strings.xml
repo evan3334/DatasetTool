@@ -42,4 +42,5 @@
     <string name="button_text_delete">Delete</string>
     <string name="button_text_cancel">Cancel</string>
     <string name="image_file_not_deleted_properly">Image file could not be deleted properly. You may need to do it manually.</string>
+    <string name="cached_image_not_deleted">Cached image created by camera was not deleted properly. You may have to do it manually.</string>
 </resources>

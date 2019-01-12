@@ -365,7 +365,7 @@ public class Dataset implements Parcelable {
             int right = boundingBox.right;
             int top = boundingBox.top;
             int bottom = boundingBox.bottom;
-            if(left < right){
+            if(left > right){
                 left = boundingBox.right;
                 right = boundingBox.left;
             }

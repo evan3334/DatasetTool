@@ -1,28 +1,21 @@
 package pw.evan.datasettool.activity;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
-
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import org.apache.commons.io.FileUtils;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,8 +23,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 
-import pw.evan.datasettool.adapter.DatasetEntryListAdapter;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import pw.evan.datasettool.R;
+import pw.evan.datasettool.adapter.DatasetEntryListAdapter;
 import pw.evan.datasettool.dataset.Dataset;
 
 public class DatasetEditActivity extends AppCompatActivity {
@@ -44,6 +43,8 @@ public class DatasetEditActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_IMAGE_CROP = 2;
+
+    private static final int MAX_IMAGE_DIMENSION = 1280;
 
     private Dataset dataset;
 
@@ -101,13 +102,50 @@ public class DatasetEditActivity extends AppCompatActivity {
             File datasetDir = Dataset.getDatasetDirectory(this, dataset.getName());
             String newImageFilename = index + ".jpg";
             File newImage = new File(datasetDir, newImageFilename);
+            while(newImage.exists()){
+                int i = 0;
+                newImageFilename = index + "-"+i+".jpg";
+                newImage = new File(datasetDir, newImageFilename);
+            }
+
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setTitle("Please wait...");
+            progressDialog.setMessage("Copying and scaling image. This should only take a moment.");
+            progressDialog.show();
+
             try {
-                //copy the cached image to a real image file
-                FileUtils.copyFile(cachedImage, newImage);
+                Bitmap bitmap = BitmapFactory.decodeFile(cachedImage.getAbsolutePath());
+                int scaledWidth, scaledHeight;
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+                //scale cached image down to 720p if necessary, increases performance later
+                if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
+                    if (width > height) {
+                        scaledWidth = MAX_IMAGE_DIMENSION;
+                        scaledHeight = (int) (MAX_IMAGE_DIMENSION * ((double) height / (double) width));
+                    } else {
+                        scaledHeight = MAX_IMAGE_DIMENSION;
+                        scaledWidth = (int) (MAX_IMAGE_DIMENSION * ((double) width / (double) height));
+                    }
+
+                    Bitmap scaled = Bitmap.createScaledBitmap(bitmap,scaledWidth,scaledHeight,false);
+                    bitmap.recycle();
+                    bitmap = scaled;
+                }
+
+                //save cached image to a real image file
+                FileOutputStream outputStream = new FileOutputStream(newImage);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,90,outputStream);
+                bitmap.recycle();
+
+                //remove the request code
                 cachedFilenames.remove(requestCode);
 
                 //get rid of the cached image
-                cachedImage.delete();
+                if (!cachedImage.delete()) {
+                    Toast.makeText(this, R.string.cached_image_not_deleted, Toast.LENGTH_SHORT).show();
+                }
 
                 //create a new dataset entry
                 String objectClass = "TennisBall";
@@ -124,10 +162,12 @@ public class DatasetEditActivity extends AppCompatActivity {
                 Intent i = new Intent(this, BoundingBoxSelectActivity.class);
                 i.putExtra(BoundingBoxSelectActivity.EXTRA_DATASET_ENTRY, newEntry);
                 i.putExtra(BoundingBoxSelectActivity.EXTRA_ENTRY_INDEX, index);
+                progressDialog.dismiss();
                 startActivityForResult(i, REQUEST_IMAGE_CROP);
 
             } catch (IOException e) {
                 e.printStackTrace();
+                progressDialog.dismiss();
             }
         } else if (requestCode == REQUEST_IMAGE_CROP && resultCode == RESULT_OK) {
             if (data != null) {
@@ -230,9 +270,6 @@ public class DatasetEditActivity extends AppCompatActivity {
         code = code >> 8;
         return code == REQUEST_IMAGE_CAPTURE;
     }
-
-
-    //private void
 
     private void captureImage() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
