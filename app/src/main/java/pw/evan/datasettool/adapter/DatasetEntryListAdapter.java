@@ -3,18 +3,25 @@ package pw.evan.datasettool.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import pw.evan.datasettool.R;
 import pw.evan.datasettool.activity.BoundingBoxSelectActivity;
 import pw.evan.datasettool.dataset.Dataset;
@@ -24,8 +31,7 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
     private Dataset dataset;
     private AppCompatActivity activity;
     private int requestCode;
-    //TODO use this later
-    private HashMap<Entry, Bitmap> thumbnails;
+    private HashMap<String, Bitmap> thumbnails;
 
     public DatasetEntryListAdapter(@NonNull Dataset dataset, int requestCode, @NonNull AppCompatActivity activity) {
         this.dataset = dataset;
@@ -34,7 +40,7 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
         this.requestCode = requestCode;
     }
 
-    public void updateDataset(@NonNull Dataset dataset){
+    public void updateDataset(@NonNull Dataset dataset) {
         this.dataset = dataset;
         notifyDataSetChanged();
     }
@@ -74,9 +80,19 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
         ((TextView) root.findViewById(R.id.size_display))
                 .setText(c.getString(R.string.size_display_format, entry.getWidth(), entry.getHeight()));
 
-        Bitmap image = entry.loadImage(c);
-        if(image != null) {
+        /*Bitmap image = entry.loadImage(c);
+        if (image != null) {
             ((ImageView) root.findViewById(R.id.thumbnail)).setImageBitmap(image);
+        }*/
+
+        Bitmap thumbnail = thumbnails.get(entry.getFilename());
+        if (thumbnail == null) {
+            Log.d("retrieve", "couldn't retrieve thumbnail " + entry.getFilename());
+            LoadThumbnailTask task = new LoadThumbnailTask(this);
+            activity.runOnUiThread(() -> task.execute(entry));
+        } else {
+            Log.d("retrieve", "successfully retrieved thumbnail " + entry.getFilename());
+            ((ImageView) root.findViewById(R.id.thumbnail)).setImageBitmap(thumbnail);
         }
 
         root.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +103,7 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
         });
     }
 
-    private void clickHandler(Context context, Entry entry){
+    private void clickHandler(Context context, Entry entry) {
         Intent i = new Intent(context, BoundingBoxSelectActivity.class);
         i.putExtra(BoundingBoxSelectActivity.EXTRA_DATASET_ENTRY, entry);
         i.putExtra(BoundingBoxSelectActivity.EXTRA_ENTRY_INDEX, dataset.getIndex(entry));
@@ -110,6 +126,120 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
         public DatasetEntryViewHolder(View v) {
             super(v);
             entryView = v;
+        }
+    }
+
+
+    private static class LoadThumbnailTask extends AsyncTask<Entry, Void, Bitmap> {
+        private int thumbnailSize;
+        public static final int DEFAULT_THUMBNAIL_SIZE = 256;
+        private Entry entry;
+        DatasetEntryListAdapter adapter;
+
+        public LoadThumbnailTask(DatasetEntryListAdapter adapter, int thumbnailSize) {
+            super();
+            this.adapter = adapter;
+            if (thumbnailSize <= 0) {
+                throw new IllegalArgumentException("Thumbnail size may not be 0 or negative!");
+            }
+            this.thumbnailSize = thumbnailSize;
+        }
+
+        public LoadThumbnailTask(DatasetEntryListAdapter adapter) {
+            this(adapter, DEFAULT_THUMBNAIL_SIZE);
+        }
+
+        @Override
+        protected Bitmap doInBackground(@NonNull Entry... entries) {
+            if (entries.length > 0) {
+                if (entries[0] != null) {
+                    entry = entries[0];
+                } else {
+                    throw new IllegalArgumentException("Entry must not be null!");
+                }
+            } else {
+                throw new IllegalArgumentException("Must have at least one entry to operate on!");
+            }
+
+            Log.d("thumbnail", "Loading thumbnail " + entry.getFilename());
+            Bitmap thumbnail;
+
+            File thumbFile = getThumbnailFile(entry);
+            if (thumbFile != null) {
+                if (thumbFile.exists()) {
+                    thumbnail = BitmapFactory.decodeFile(thumbFile.getAbsolutePath());
+                } else {
+                    thumbnail = createThumbnail();
+                    saveThumbnail(thumbnail);
+                }
+            } else {
+                Log.e("background", "Returning null!");
+                return null;
+            }
+
+            return thumbnail;
+        }
+
+        private Bitmap createThumbnail() {
+            Log.d("thumbnail", "create new thumbnail " + entry.getFilename());
+            Uri imageURI = entry.getImageURI();
+            Bitmap original = BitmapFactory.decodeFile(imageURI.getPath());
+            int scaleWidth, scaleHeight;
+            if (original.getWidth() > original.getHeight()) {
+                scaleWidth = DEFAULT_THUMBNAIL_SIZE;
+                scaleHeight = (int) (DEFAULT_THUMBNAIL_SIZE * ((double) original.getHeight() / (double) original.getWidth()));
+            } else {
+                scaleWidth = (int) (DEFAULT_THUMBNAIL_SIZE * ((double) original.getWidth() / (double) original.getHeight()));
+                scaleHeight = DEFAULT_THUMBNAIL_SIZE;
+            }
+            Log.d("thumbnail", "scaling - w: " + scaleWidth + " h: " + scaleHeight);
+            Bitmap scaled = Bitmap.createScaledBitmap(original, scaleWidth, scaleHeight, false);
+            original.recycle();
+            return scaled;
+        }
+
+        private void saveThumbnail(Bitmap bitmap) {
+            File thumbFile = getThumbnailFile(entry);
+            if (thumbFile != null) {
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(thumbFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fileOutputStream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private File getThumbnailFile(Entry entry) {
+            String filename = entry.getFilename();
+            File thumbDir = getThumbnailDirectory();
+            if (thumbDir != null) {
+                return new File(thumbDir, filename);
+            } else {
+                return null;
+            }
+        }
+
+        private File getThumbnailDirectory() {
+            String datasetName = adapter.dataset.getName();
+            File root = adapter.activity.getExternalCacheDir();
+            File thumbnailDir = new File(root, "thumbnails");
+            File datasetThumbnailDir = new File(thumbnailDir, datasetName);
+            if (datasetThumbnailDir.exists() || datasetThumbnailDir.mkdirs()) {
+                return datasetThumbnailDir;
+            } else {
+                Log.e("background", "mkdirs() failed!");
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            adapter.thumbnails.put(entry.getFilename(), bitmap);
+            Log.d("hashmap", "entry for " + entry.getFilename() + ": " + adapter.thumbnails.get(entry.getFilename()));
+            int index = adapter.dataset.getIndex(entry);
+            Log.d("thumbnail", "notify changed for index " + index);
+            adapter.notifyItemChanged(index);
         }
     }
 }
