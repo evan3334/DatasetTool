@@ -61,12 +61,12 @@ public class Dataset implements Parcelable {
         this.name = name;
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append(" - ");
         sb.append(entries.size());
         sb.append(" entries: ");
-        for(Entry entry : entries){
+        for (Entry entry : entries) {
             sb.append("\n");
             sb.append(entry.toString());
         }
@@ -77,17 +77,17 @@ public class Dataset implements Parcelable {
         return new Entry(imageUri, boundingBox, width, height, className);
     }
 
-    public static Entry createEntry(File image, String objectClass){
+    public static Entry createEntry(File image, String objectClass) {
         Uri imageUri = Uri.fromFile(image);
         Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         bitmap.recycle();
-        Rect boundingBox = new Rect(0,0,width, height);
-        return createEntry(imageUri, boundingBox,width,height,objectClass);
+        Rect boundingBox = new Rect(0, 0, width, height);
+        return createEntry(imageUri, boundingBox, width, height, objectClass);
     }
 
-    public int getIndex(Entry entry){
+    public int getIndex(Entry entry) {
         return entries.indexOf(entry);
     }
 
@@ -108,8 +108,8 @@ public class Dataset implements Parcelable {
     }
 
     private static File getCSV(@NonNull Context context, @NonNull String datasetName) {
-        Log.d("context==null", String.valueOf(context==null));
-        Log.d("datasetName==null",String.valueOf(datasetName==null));
+        Log.d("context==null", String.valueOf(context == null));
+        Log.d("datasetName==null", String.valueOf(datasetName == null));
         File directory = new File(context.getExternalFilesDir(null), datasetName);
         if (directory.exists() && directory.isDirectory()) {
             File csvFile = new File(directory, datasetName + ".csv");
@@ -137,7 +137,7 @@ public class Dataset implements Parcelable {
         }
     }
 
-    public void writeToFile(Context context){
+    public void writeToFile(Context context) {
         File csvFile = getCSV(context, getName());
         try {
             FileWriter writer = new FileWriter(csvFile);
@@ -149,7 +149,7 @@ public class Dataset implements Parcelable {
         }
     }
 
-    public static File getDatasetDirectory(Context context, String datasetName){
+    public static File getDatasetDirectory(Context context, String datasetName) {
         return new File(context.getExternalFilesDir(null), datasetName);
     }
 
@@ -293,7 +293,7 @@ public class Dataset implements Parcelable {
             }
         }
 
-        public String toString(){
+        public String toString() {
             return getClass().getName() +
                     " - file: " +
                     getFilename() +
@@ -360,20 +360,20 @@ public class Dataset implements Parcelable {
             }
         }
 
-        private void validateBoundingBox(){
+        private void validateBoundingBox() {
             int left = boundingBox.left;
             int right = boundingBox.right;
             int top = boundingBox.top;
             int bottom = boundingBox.bottom;
-            if(left > right){
+            if (left > right) {
                 left = boundingBox.right;
                 right = boundingBox.left;
             }
-            if(top > bottom){
+            if (top > bottom) {
                 top = boundingBox.bottom;
                 bottom = boundingBox.top;
             }
-            boundingBox.set(left,top,right,bottom);
+            boundingBox.set(left, top, right, bottom);
         }
     }
 }

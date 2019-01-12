@@ -53,6 +53,7 @@ public class BoundingBoxSelectActivity extends AppCompatActivity {
                         cropImageView = findViewById(R.id.cropView);
                         cropImageView.setImageUriAsync(entry.getImageURI());
                         Log.d("set image uri", entry.getImageURI().toString());
+                        cropImageView.setMinCropResultSize(1,1);
                         cropImageView.setOnSetImageUriCompleteListener(new CropImageView.OnSetImageUriCompleteListener() {
                             @Override
                             public void onSetImageUriComplete(CropImageView view, Uri uri, Exception error) {
