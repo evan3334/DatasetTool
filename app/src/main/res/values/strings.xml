@@ -36,4 +36,10 @@
     <string name="xmax_format">xmax: %1$d</string>
     <string name="xmin_format">xmin: %1$d</string>
     <string name="done">Done</string>
+    <string name="delete_entry">Delete entry</string>
+    <string name="delete_entry_title">Delete Entry?</string>
+    <string name="warning_action_irreversible">This action is irreversible.</string>
+    <string name="button_text_delete">Delete</string>
+    <string name="button_text_cancel">Cancel</string>
+    <string name="image_file_not_deleted_properly">Image file could not be deleted properly. You may need to do it manually.</string>
 </resources>

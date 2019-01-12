@@ -1,6 +1,7 @@
 package pw.evan.datasettool.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,8 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +24,7 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import pw.evan.datasettool.R;
@@ -95,6 +100,14 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
             ((ImageView) root.findViewById(R.id.thumbnail)).setImageBitmap(thumbnail);
         }
 
+        ImageButton deleteEntryButton = root.findViewById(R.id.delete_button);
+        deleteEntryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteHandler(c, entry);
+            }
+        });
+
         root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,6 +121,34 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
         i.putExtra(BoundingBoxSelectActivity.EXTRA_DATASET_ENTRY, entry);
         i.putExtra(BoundingBoxSelectActivity.EXTRA_ENTRY_INDEX, dataset.getIndex(entry));
         activity.startActivityForResult(i, requestCode);
+    }
+
+    private void deleteHandler(Context context, Entry entry) {
+        int index = dataset.getIndex(entry);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(R.string.delete_entry_title);
+        builder.setMessage(R.string.warning_action_irreversible);
+        builder.setPositiveButton(R.string.button_text_delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                File imageFile = new File(entry.getImageURI().getPath());
+                if (!imageFile.delete()) {
+                    Toast.makeText(context, R.string.image_file_not_deleted_properly, Toast.LENGTH_SHORT).show();
+                }
+                dataset.getEntries().remove(index);
+                dataset.writeToFile(context);
+                notifyItemRemoved(index);
+                notifyDataSetChanged();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(R.string.button_text_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
 
@@ -128,7 +169,6 @@ public class DatasetEntryListAdapter extends RecyclerView.Adapter<DatasetEntryLi
             entryView = v;
         }
     }
-
 
     private static class LoadThumbnailTask extends AsyncTask<Entry, Void, Bitmap> {
         private int thumbnailSize;

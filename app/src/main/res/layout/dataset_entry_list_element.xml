@@ -53,57 +53,17 @@
         app:layout_constraintTop_toBottomOf="@+id/thumbnail" />
 
     <ImageButton
-        android:id="@+id/move_up_button"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="8dp"
-        android:background="#00ffffff"
-        android:contentDescription="@string/move_up"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/move_to_top_button"
-        app:layout_constraintEnd_toStartOf="@+id/move_to_top_button"
-        app:layout_constraintTop_toTopOf="@+id/move_to_top_button"
-        app:srcCompat="@drawable/ic_move_up" />
-
-    <ImageButton
-        android:id="@+id/move_down_button"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="8dp"
-        android:background="#00ffffff"
-        android:contentDescription="@string/move_down"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/move_up_button"
-        app:layout_constraintEnd_toStartOf="@+id/move_up_button"
-        app:layout_constraintTop_toTopOf="@+id/move_up_button"
-        app:srcCompat="@drawable/ic_move_down" />
-
-    <ImageButton
-        android:id="@+id/move_to_top_button"
+        android:id="@+id/delete_button"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
         android:background="#00ffffff"
-        android:contentDescription="@string/move_to_top"
+        android:contentDescription="@string/delete_entry"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="@+id/size_display"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_move_to_top" />
-
-    <ImageButton
-        android:id="@+id/move_to_bottom_button"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="8dp"
-        android:background="#00ffffff"
-        android:contentDescription="@string/move_to_bottom"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/move_down_button"
-        app:layout_constraintEnd_toStartOf="@+id/move_down_button"
-        app:layout_constraintTop_toTopOf="@+id/move_down_button"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_move_to_bottom" />
+        app:srcCompat="@drawable/ic_delete" />
 
     <TextView
         android:id="@+id/class_display"
